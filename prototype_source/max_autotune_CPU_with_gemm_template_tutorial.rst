@@ -1,7 +1,7 @@
 Max-autotune Support on CPU with GEMM Template Tutorial
 ==============================================================
 
-**Author**: `Jiong Gong <https://github.com/jgong5>`__, Leslie Fang <https://github.com/leslie-fang-intel>`__, `Chunyuan Wu <https://github.com/chunyuan-w>`__
+**Author**: `Jiong Gong <https://github.com/jgong5>`__, `Leslie Fang <https://github.com/leslie-fang-intel>`__, `Chunyuan Wu <https://github.com/chunyuan-w>`__
 
 Prerequisites:
 ----------------
