@@ -184,7 +184,7 @@ in the generated code anymore, instead, we'll find kernel based on CPP GEMM temp
                     }
                 }
             }
-            amx_state.release([]() { _tile_release(); });
+            ...
         }
     }
     ''')
