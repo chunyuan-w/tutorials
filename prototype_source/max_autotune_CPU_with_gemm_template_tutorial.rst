@@ -9,7 +9,7 @@ Prerequisites:
 
 Introduction
 ------------
-"max-autotune" mode for the Inductor CPU backend in torch.compile profiles multiple implementations of operations at compile time and selects the best-performing one,
+``max-autotune`` mode for the Inductor CPU backend in torch.compile profiles multiple implementations of operations at compile time and selects the best-performing one,
 trading longer compilation times for improved runtime performance. This enhancement is particularly beneficial for GEMM-related operations.
 In the Inductor CPU backend, we’ve introduced a C++ template-based GEMM implementation as an alternative to the ATen-based approach that relies on oneDNN and MKL libraries.
 This is similar to the max-autotune mode on CUDA, where implementations from ATen, Triton, and CUTLASS are considered.
@@ -17,14 +17,14 @@ This is similar to the max-autotune mode on CUDA, where implementations from ATe
 
 API
 ------------
-The API to turn on the "max-autotune" mode: `compiled = torch.compile(model, mode='max-autotune')`.
+The API to turn on the ``max-autotune`` mode: ``compiled = torch.compile(model, mode='max-autotune')``.
 
-By setting `TORCHINDUCTOR_MAX_AUTOTUNE_GEMM_BACKENDS=CPP`, the selected backend is forced to be CPP template.
+By setting ``TORCHINDUCTOR_MAX_AUTOTUNE_GEMM_BACKENDS=CPP``, the selected backend is forced to be CPP template.
 
 
 Example code
 ------------
-Lauch the below code by setting `TORCHINDUCTOR_FREEZING=1`, we can find the autotuning log similar to (the performance numbers are for demonstration purpose):
+Lauch the below code by setting ``TORCHINDUCTOR_FREEZING=1``, we can find the autotuning log similar to (the performance numbers are for demonstration purpose):
 
 The below means that CPP template outperforms ATen kernel and it will be selected.
 TODO: perf numbers?
@@ -78,7 +78,7 @@ TODO: perf numbers?
         y = compiled(x)
 
 
-To check the generated output code, set `TORCH_LOGS="+output_code"`.
+To check the generated output code, set ``TORCH_LOGS="+output_code"``.
 TODO: output code too long
 
 .. code:: python
