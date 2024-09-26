@@ -83,8 +83,7 @@ In this case, CPP template outperforms ATen kernel so that it will be selected.
 We could check the generated output code by setting ``export TORCH_LOGS="+output_code"``.
 When CPP template is selected, we won't have ``torch.ops.mkldnn._linear_pointwise.default`` (for bfloat16) or ``torch.ops.mkl._mkl_linear.default`` (for float32)
 in the generated code anymore, instead, we'll find kernel based on CPP GEMM template ``cpp_fused__to_copy_relu_1``
-(only part of the code is demonstrated below for simplicity) with the epilogue
-ReLU fused inside the CPP GEMM template kernel.
+(only part of the code is demonstrated below for simplicity) with the bias and relu epilogues fused inside the CPP GEMM template kernel.
 
 .. code:: python
 
@@ -128,7 +127,6 @@ ReLU fused inside the CPP GEMM template kernel.
     extern "C" 
     void kernel(const bfloat16* X, const bfloat16* W, const bfloat16* inp, bfloat16* Y)
     {
-
         constexpr int64_t num_threads = 40;
         constexpr int64_t N = 32;
         constexpr int64_t K = 16;
@@ -139,32 +137,17 @@ ReLU fused inside the CPP GEMM template kernel.
         constexpr int64_t Kr_blocks = (K + Kr - 1) / Kr;
         constexpr int64_t M = static_cast<int64_t>(64L);
         constexpr int64_t Mr_blocks = (M + Mr - 1) / Mr;
-
         ...
-
-        // make sure all partitions are assigned
-        TORCH_CHECK(
-            Mt_blocks * Nt_blocks * Kt_blocks * 40 >= Mr_blocks * Nr_blocks * Kr_blocks,
-            "Not all partitions are assigned."
-        );
         #pragma omp parallel num_threads(40)
         {
             const int tid = omp_get_thread_num();
-            
             ...
-
-            AMXState amx_state;
-            auto _local_acc_buf = std::make_unique<float[]>(static_cast<int64_t>(Mc_blocks*Mr*Nc_blocks*Nr)); auto local_acc_buf = _local_acc_buf.get();
             for (int64_t mc_block_id = 0; mc_block_id < num_Mc_blocks_per_thread; mc_block_id++) {
-                
                 ...
-                
                 for (int64_t nc = n_block_start; nc < n_block_end; nc += Nc_blocks) {
                     ...
-
                     for (int64_t kc = k_block_start; kc < k_block_end; kc += Kc_blocks) {
-                        int64_t k_start = kc * Kr;
-                        int64_t k_end = std::min(std::min(kc + Kc_blocks, k_block_end) * Kr, K);
+                        ...
                         for (int64_t nci = nc; nci < nc_block_end; nci++) {
                             if (kc == k_block_start) {
                                 kernel_micro_gemm<static_cast<bool>(false)>(
@@ -181,6 +164,7 @@ ReLU fused inside the CPP GEMM template kernel.
                     }
                     {
                         {
+                            // Epilogue fusion here for bias and relu
                             #pragma GCC ivdep
                             for(int64_t x0=static_cast<int64_t>(0L); x0<static_cast<int64_t>(m_end + ((-1L)*m_start)); x0+=static_cast<int64_t>(1L))
                             {
