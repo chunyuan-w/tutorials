@@ -14,6 +14,7 @@ trading longer compilation times for improved runtime performance. This enhancem
 In the Inductor CPU backend, we’ve introduced a C++ template-based GEMM implementation as an alternative to the ATen-based approach that relies on oneDNN and MKL libraries.
 This is similar to the max-autotune mode on CUDA, where implementations from ATen, Triton, and CUTLASS are considered.
 
+We have covered most popular data types, including FP32, BF16, FP16, and INT8, with epilogue fusions for x86 CPUs.
 
 How to activate ``max-autotune`` mode
 ------------
@@ -195,9 +196,3 @@ In this tutorial, we introduced max-autotune support on CPU with GEMM template. 
 the generated code of GEMM template.
 
 This feature is in prototype stage. If you have any feature requests or run into any issues, please file a bug report at `GitHub issues <https://github.com/pytorch/pytorch/issues>`_.
-
-
-
-
-TODO: perf numbers?
-TODO: output code too long
