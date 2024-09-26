@@ -130,13 +130,7 @@ in the generated code anymore, instead, we'll find kernel based on CPP GEMM temp
         constexpr int64_t num_threads = 40;
         constexpr int64_t N = 32;
         constexpr int64_t K = 16;
-        constexpr int64_t Mr = 32;
-        constexpr int64_t Nr = 32;
-        constexpr int64_t Kr = 32;
-        constexpr int64_t Nr_blocks = (N + Nr - 1) / Nr;
-        constexpr int64_t Kr_blocks = (K + Kr - 1) / Kr;
         constexpr int64_t M = static_cast<int64_t>(64L);
-        constexpr int64_t Mr_blocks = (M + Mr - 1) / Mr;
         ...
         #pragma omp parallel num_threads(40)
         {
